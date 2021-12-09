@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use PhpParser\Node\Expr\FuncCall;
@@ -10,7 +11,7 @@ use PhpParser\Node\Expr\FuncCall;
 class ArticleController extends Controller
 {
     public function index() {
-        $articles = Article::all();
+        $articles = Article::with('user')->latest()->paginate(3);
         return view('articles.index', compact('articles'));
     }
 
@@ -37,8 +38,9 @@ class ArticleController extends Controller
     }
 
     public function show($id) {
-        $article = Article::find($id);
-        return view('articles.show', compact('article'));
+        $article = Article::with('user')->find($id);
+        $comments = Comment::all();
+        return view('articles.show', compact('article', 'comments'));
     }
 
     public function edit($id) {
